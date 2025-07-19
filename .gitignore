@@ -1,0 +1,41 @@
+.idea/
+coverage
+dist
+node_modules/
+logs
+.DS_Store
+*.pem
+.env
+temp/ap-*/
+android_play_subs_keys.json
+yarn.lock
+
+# Local Terraform state files
+terraform.tfstate
+terraform.tfstate.backup
+
+# Ignore crash logs
+crash.log
+
+# Ignore CLI configuration files
+.terraformrc
+terraform.rc
+
+# Terraform provider and module downloads
+.terraform/
+
+# Terraform plan files (used for saving plans before applying)
+*.tfplan
+tfplan.*
+
+# Ignore override files that are local and shouldn't be committed
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Logs or any other temporary files
+*.log
+*.tmp
+gcp-credentials-*.json
+notification-*.json
