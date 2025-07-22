@@ -57,14 +57,16 @@ export async function  approveExpense(
   }
 }
 
-export async function getAnalytics(): Promise<Result<Record<string, number>>> {
+export async function getAnalytics(): Promise<Result<Expense[]>> {
   try {
     const result = await getExpensesAnalytics();
+
     if (result.isError()) {
       logger.error(`ExpenseController#getAnalytics error: ${result.error}`);
       return result;
     }
-    return Result.ok(result.data);
+
+    return Result.ok(result.data); // result.data is now Expense[]
   } catch (error: any) {
     logger.error(`ExpenseController#getAnalytics unexpected error: ${error.message}`, error);
     return Result.error({ customMessage: 'Unexpected error fetching analytics.' });

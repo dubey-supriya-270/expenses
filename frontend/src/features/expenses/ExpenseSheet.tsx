@@ -1,4 +1,4 @@
-import {useState} from 'react'
+import { useState } from 'react'
 import {
   Sheet,
   SheetTrigger,
@@ -6,8 +6,8 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet'
-import {Button} from '@/components/ui/button'
-import {Plus} from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Plus } from 'lucide-react'
 import ExpenseForm from './ExpenseForm'
 
 export default function ExpenseSheet() {
@@ -26,7 +26,7 @@ export default function ExpenseSheet() {
           <SheetTitle>New Expense</SheetTitle>
         </SheetHeader>
         <div className="mt-6">
-          <ExpenseForm />
+          <ExpenseForm onClose={() => setOpen(false)} />
         </div>
       </SheetContent>
     </Sheet>

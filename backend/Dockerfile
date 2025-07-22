@@ -29,4 +29,4 @@ ENV NODE_ENV=production
 EXPOSE 3000
 
 # Run your compiled server
-CMD ["node", "dist/index.js"]
+CMD ["--import=specifier-resolution-node/register", "dist/index.js"]

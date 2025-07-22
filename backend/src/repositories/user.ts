@@ -26,6 +26,7 @@ export const findUserByUsername = async (
 ): Promise<Result<User | null>> => {
   try {
     const user = await knexInstance('users').where({ username }).first();
+
     return Result.ok(user || null);
   } catch (error: any) {
     logger.error(`findUserByUsername error: ${error.message}`, error);

@@ -8,10 +8,10 @@ export const addUser = async ( userName: string,
   role: User['role']) => {
   try {
 
-    const isUserExists: Result<User[] | any> =
+    const isUserExists: Result<User | any> =
       await findUserByUsername(userName);
 
-    if (isUserExists?.data && isUserExists.data?.length > 0) {
+    if (isUserExists?.data) {
       return Result.error("User already exists with this userName");
     }
 

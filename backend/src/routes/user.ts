@@ -6,6 +6,7 @@ import * as userController from "../controllers/user";
 import { Result } from "../interfaces/result";
 import { hashString, validateHashedString } from "../helpers/bcrypt";
 import { generateToken } from "../helpers/jwt";
+import logger from "../utils/logger";
 
 const router = express.Router();
 
@@ -40,8 +41,8 @@ router.post(
 
       res.cookie("token", token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
+        secure: false,
+        sameSite: "lax",
         maxAge: 1000 * 60 * 60 * 24, // 1 day
         path   : '/',   
       });
@@ -102,9 +103,8 @@ router.post(
 
       res.cookie("token", token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
-
+        secure: false,
+        sameSite: "lax",
         maxAge: 1000 * 60 * 60 * 24,
         path   : '/',   
       });

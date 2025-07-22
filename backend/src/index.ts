@@ -1,7 +1,7 @@
 
 import 'dotenv/config'      // uses .env.local automatically
 
-import './config/instrumentation'; 
+// import './config/instrumentation'; 
 import cors from "cors";
 import express, { Request, Response } from "express";
 import helmet from "helmet";
@@ -31,8 +31,9 @@ declare module "express" {
 
 // Create an instance of express
 const app = express();
+
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
   credentials: true,
 }));
 app.use(cookieParser());

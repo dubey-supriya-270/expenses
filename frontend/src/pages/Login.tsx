@@ -1,22 +1,29 @@
 import LoginForm from '../features/auth/LoginForm'
-import {Link, useLocation, Navigate} from 'react-router-dom'
-import {useAppSelector} from '../app/hooks'
+import { Link, useLocation, Navigate } from 'react-router-dom'
+import { useAppSelector } from '../app/hooks'
 
 export default function Login() {
-  const {isAuthenticated} = useAppSelector((s) => s.auth)
+  const { isAuthenticated } = useAppSelector((s) => s.auth)
   const loc = useLocation()
-  if (isAuthenticated) return <Navigate to={loc.state?.from?.pathname ?? '/expenses'} replace />
+
+  if (isAuthenticated) {
+    return <Navigate to={loc.state?.from?.pathname ?? '/expenses'} replace />
+  }
 
   return (
-    <div className="p-8 space-y-6">
-      <h1 className="text-2xl font-bold">Log in</h1>
-      <LoginForm />
-      <p>
-        No account?{' '}
-        <Link to="/register" className="underline text-blue-600">
-          Register
-        </Link>
-      </p>
+    <div className="flex items-center justify-center min-h-screen px-4 bg-gray-50">
+      <div className="w-full max-w-sm space-y-4">
+        <LoginForm />
+        <p className="text-sm text-center">
+          <span className="text-muted-foreground">No account?</span>{' '}
+          <Link
+            to="/register"
+            className="text-blue-600 font-semibold hover:underline transition-colors"
+          >
+            Register
+          </Link>
+        </p>
+      </div>
     </div>
   )
 }

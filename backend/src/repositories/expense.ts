@@ -77,25 +77,24 @@ export const approveUserExpense = async (id: number): Promise<Result<null>> => {
   }
 };
 
-export const getExpensesAnalytics = async (): Promise<
-  Result<Record<string, number>>
-> => {
+export const getExpensesAnalytics = async (): Promise<Result<Expense[]>> => {
   try {
     const cached = await getFromCache(ANALYTICS_KEY);
     if (cached.isOk()) {
       logger.info("Analytics cache hit");
-      return Result.ok(JSON.parse(cached?.data!));
+      return Result.ok(JSON.parse(cached.data!));
     }
-    logger.info("Analytics cache miss, computing");
-    const raw: Expense[] = await knexInstance("expenses");
-    const analytics = raw.reduce((acc: Record<string, number>, e) => {
-      acc[e.category] = (acc[e.category] || 0) + e.amount;
-      return acc;
-    }, {});
-    await setToCache(ANALYTICS_KEY, JSON.stringify(analytics));
-    return Result.ok(analytics);
+
+    logger.info("Analytics cache miss, fetching approved expenses");
+
+    const approvedExpenses: Expense[] = await knexInstance("expenses").where({ approved: true });
+
+    await setToCache(ANALYTICS_KEY, JSON.stringify(approvedExpenses));
+
+    return Result.ok(approvedExpenses);
   } catch (error: any) {
     logger.error(`getExpensesAnalytics error: ${error.message}`, error);
     return Result.error({ customMessage: "Failed to fetch analytics." });
   }
 };
+
