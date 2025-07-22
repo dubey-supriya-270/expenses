@@ -1,0 +1,15 @@
+node_modules/
+!.dockerignore
+.env
+*.pem
+gcp-credentials-*.json
+.DS_Store
+.git
+.gitignore
+logs
+README.md
+.prettierrc.js
+deployments/
+.github/
+.env.sample.dev
+.env.sample.prod

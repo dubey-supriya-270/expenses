@@ -1,41 +1,47 @@
+# Global ignore
 .idea/
-coverage
-dist
-node_modules/
-logs
 .DS_Store
 *.pem
-.env
-temp/ap-*/
-android_play_subs_keys.json
-yarn.lock
+*.log
+*.tmp
+*.tfplan
+tfplan.*
+*.json
+coverage
+logs
 
-# Local Terraform state files
+# Environment variables
+.env
+frontend/.env
+backend/.env
+
+# Node modules (local + frontend + backend)
+node_modules/
+frontend/node_modules/
+backend/node_modules/
+
+# Build output
+dist/
+frontend/dist/
+backend/dist/
+
+# Terraform state
 terraform.tfstate
 terraform.tfstate.backup
-
-# Ignore crash logs
-crash.log
-
-# Ignore CLI configuration files
+.terraform/
 .terraformrc
 terraform.rc
 
-# Terraform provider and module downloads
-.terraform/
-
-# Terraform plan files (used for saving plans before applying)
-*.tfplan
-tfplan.*
-
-# Ignore override files that are local and shouldn't be committed
+# Terraform overrides
 override.tf
 override.tf.json
 *_override.tf
 *_override.tf.json
 
-# Logs or any other temporary files
-*.log
-*.tmp
+# Android / Mobile / Misc
+android_play_subs_keys.json
+temp/ap-*/
+crash.log
 gcp-credentials-*.json
 notification-*.json
+yarn.lock

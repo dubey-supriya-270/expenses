@@ -1,0 +1,105 @@
+
+networks:
+  observability:
+    driver: bridge
+
+volumes:
+  db_data:
+  redis_data:
+  # grafana_data:
+
+services:
+  # ────────────────────────────── Databases / Infra ───────────────────────────
+  db:
+    image: postgres:latest
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER:     ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB:       ${POSTGRES_DB}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./db:/docker-entrypoint-initdb.d:ro
+    networks: [observability]
+    ports: ["5432:5432"]
+
+  redis:
+    image: redis:6
+    restart: unless-stopped
+    command: ["redis-server", "--requirepass", "${REDIS_PASSWORD}"]
+    volumes:
+      - redis_data:/data
+    networks: [observability]
+    ports: ["6379:6379"]
+
+  loki:
+    image: grafana/loki:3.0.0
+    restart: unless-stopped
+    command: -config.file=/etc/loki/local-config.yaml
+    networks: [observability]
+    ports: ["3100:3100"]
+
+  prometheus:
+    image: prom/prometheus:v2.52.0
+    restart: unless-stopped
+    volumes:
+      - ./prometheus.yaml:/etc/prometheus/prometheus.yml:ro
+    networks: [observability]
+    ports: ["9090:9090"]
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.74.0
+    restart: unless-stopped
+    command: ["--config", "/etc/otel-config.yaml"]
+    volumes:
+      - ./otel-config.yaml:/etc/otel-config.yaml:ro
+    networks: [observability]
+    ports:
+      - "4317:4317"
+      - "4318:4318"
+      - "8889:8889"
+
+  grafana:
+    image: grafana/grafana:11.0.0
+    restart: unless-stopped
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: grafana
+      GF_INSTALL_PLUGINS: grafana-piechart-panel
+    depends_on: [prometheus, loki]
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks: [observability]
+    ports: ["3001:3000"]
+
+  # ─────────────────────────────── Backend API ────────────────────────────────
+  backend:
+    build: ./backend                 # uses backend/Dockerfile
+    restart: unless-stopped
+    depends_on: [db, redis]
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      CACHE_URL:    redis://:${REDIS_PASSWORD}@redis:6379
+      JWT_SECRET: ${JWT_SECRET}
+      CACHE_TTL_SECONDS: 3600
+      CORS_ORIGIN: ${CORS_ORIGIN}
+      
+      # OTEL_EXPORTER_OTLP_TRACES_ENDPOINT:  http://otel-collector:4318/v1/traces
+      # OTEL_EXPORTER_OTLP_METRICS_ENDPOINT: http://otel-collector:4318/v1/metrics
+      # OTEL_EXPORTER_OTLP_LOGS_ENDPOINT:   http://otel-collector:4318/v1/logs
+    networks: [observability]
+    ports: ["3000:3000"]
+    # command: npm
+
+  # ─────────────────────────────── Front-end SPA ──────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        # passed to Vite at build time (frontend/.env is optional)
+        - VITE_API_URL=/api
+    restart: unless-stopped
+    depends_on: [backend]
+    networks: [observability]
+    ports: ["80:80"]         # host:container (serve on localhost:5173)
