@@ -6,7 +6,7 @@ networks:
 volumes:
   db_data:
   redis_data:
-  # grafana_data:
+  grafana_data:
 
 services:
   # ────────────────────────────── Databases / Infra ───────────────────────────
@@ -43,7 +43,7 @@ services:
     image: prom/prometheus:v2.52.0
     restart: unless-stopped
     volumes:
-      - ./prometheus.yaml:/etc/prometheus/prometheus.yml:ro
+      - ./prometheus.yaml:/etc/prometheus/prometheus.yaml:ro
     networks: [observability]
     ports: ["9090:9090"]
 
@@ -75,7 +75,7 @@ services:
   backend:
     build: ./backend                 # uses backend/Dockerfile
     restart: unless-stopped
-    depends_on: [db, redis]
+    depends_on: [db, redis, otel-collector]
     environment:
       NODE_ENV: production
       PORT: 3000
@@ -85,9 +85,9 @@ services:
       CACHE_TTL_SECONDS: 3600
       CORS_ORIGIN: ${CORS_ORIGIN}
       
-      # OTEL_EXPORTER_OTLP_TRACES_ENDPOINT:  http://otel-collector:4318/v1/traces
-      # OTEL_EXPORTER_OTLP_METRICS_ENDPOINT: http://otel-collector:4318/v1/metrics
-      # OTEL_EXPORTER_OTLP_LOGS_ENDPOINT:   http://otel-collector:4318/v1/logs
+      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT:  http://otel-collector:4318/v1/traces
+      OTEL_EXPORTER_OTLP_METRICS_ENDPOINT: http://otel-collector:4318/v1/metrics
+      OTEL_EXPORTER_OTLP_LOGS_ENDPOINT:   http://otel-collector:4318/v1/logs
     networks: [observability]
     ports: ["3000:3000"]
     # command: npm
